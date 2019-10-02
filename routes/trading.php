@@ -60,6 +60,7 @@ $router->get('user', 'UsersController@all');
 $router->get('user/{id}', 'UsersController@get');
 $router->post('user', 'UsersController@add');
 $router->post('api/360/v1/user/add', 'Api360Controller@add_user');
+$router->post('login', 'Trading360Controller@login');
 $router->get('matricula/validar/{token}', 'Trading360Controller@validar');
 $router->get('aluno/pagina/{token}', 'Trading360Controller@pagina');
 $router->post('matricula/setar', 'Trading360Controller@setar');

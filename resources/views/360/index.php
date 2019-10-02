@@ -372,22 +372,24 @@
 	
 	$( document ).ready(function() {
 		$( "#login-form-submit" ).click(function( event ) {
-	  		alert( "Handler for .click() called." );
-	  		alert( $( "#login-form-username" ).val() );
-	  		alert( $( "#login-form-password" ).val() );
 	  		$.ajax({
-			                type: 'POST',
-			                url: '/admin/login',
-			                dataType: "html",
-			                data: $('form').serialize(),
-			                success: function(result) {
-			                	console.log(result);
-			                    window.location.href = "/aluno/conta";
-			                },
-			                error : function(error) {
-
-			                }
-			            });
+                type: 'POST',
+                url: '/login',
+                dataType: "html",
+                data: $('form').serialize(),
+                success: function(result) {
+                	result = JSON.parse(result);
+                	console.log(result);
+                	if (result.status) {
+                    	window.location.href = "/aluno/pagina/"+result.usuario.user_token;
+                	} else {
+                		alert(result.msg);
+                	}
+                },
+                error : function(error) {
+                	alert(error);
+                }
+            });
 
   			event.preventDefault();
 		});
