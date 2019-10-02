@@ -56,6 +56,7 @@
 						<h3><?php echo $usuario_name;?></h3>
 						<span><!-- INICIO FORMULARIO BOTAO PAGSEGURO -->
 						<!-- INICIO FORMULARIO BOTAO PAGSEGURO -->
+						Valor do Curso : R$ <span id="valor_atual">2000,00</span>&nbsp;<button class="btn btn-sm btn-secondary" id="desconto">Desconto</button>
 						<form target="pagseguro" action="https://pagseguro.uol.com.br/security/webpagamentos/webpagto.aspx" method="post">
 						<input type="hidden" name="email_cobranca" value="cursodetrading@gr360.com.br">
 						<input type="hidden" name="tipo" value="CP">
@@ -63,8 +64,12 @@
 						<input type="hidden" name="item_id_1" value="12">
 						<input type="hidden" name="item_descr_1" value="Curso de Trading">
 						<input type="hidden" name="item_quant_1" value="1">
-						<input type="hidden" name="item_valor_1" value="200000">
+						<input type="hidden" name="item_valor_1" id="item_valor_1" value="200000">
 						<input type="hidden" name="item_peso_1" value="0300">
+						<input type="hidden" name="reference" value="<?php echo $user_token.time();?>">
+						<input name="senderName" type="hidden" value="<?php echo $usuario_name;?>">  
+				        <input name="senderPhone" type="hidden" value="<?php echo $usuario_telefone;?>">  
+				        <input name="senderEmail" type="hidden" value="<?php echo $usuario_email;?>">  
 						<input type="image" src="https://stc.pagseguro.uol.com.br/public/img/botoes/pagamentos/209x48-pagar-assina.gif" name="submit" alt="Pague com PagSeguro - é rápido, grátis e seguro!">
 						</form>
 						<!-- FINAL FORMULARIO BOTAO PAGSEGURO -->
@@ -374,6 +379,15 @@
 		jQuery( "#tabs-profile" ).on( "tabsactivate", function( event, ui ) {
 			jQuery( '.flexslider .slide' ).resize();
 		});
+
+		$( "#desconto" ).click(function() {
+		  alert( "Seu desconto foi aplicado com sucesso !!!" );
+		  $("#valor_atual").html("1400,00");
+		  $("#item_valor_1").val("140000");
+		  $( "#desconto" ).hide();
+		});
+
+
 	</script>
 </body>
 </html>

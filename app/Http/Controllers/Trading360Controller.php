@@ -59,7 +59,7 @@ class Trading360Controller extends Controller {
 
         $app_name = env('APP_NAME', '360');
     	$app_view = env('APP_VIEW', '360');
-    	return view($app_view.'/aluno', ['app_name' => $app_name , 'usuario_name'=>$usuario->name, 'user_token'=>$token]);
+    	return view($app_view.'/aluno', ['app_name' => $app_name , 'usuario_name'=>$usuario->name, 'usuario_email'=>$usuario->email,'usuario_telefone'=>$usuario->telefone ,'user_token'=>$token]);
 
     }
 
