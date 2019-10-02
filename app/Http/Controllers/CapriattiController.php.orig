@@ -1,0 +1,783 @@
+<?php namespace App\Http\Controllers;
+
+class CapriattiController extends Controller {
+
+    const MODEL = "App\Capriatti";
+
+    public function acerta(){
+       // print_r($_POST);
+         $existe = \App\Classes\User::find($_POST['data']['id']);
+        //$resposta = array('status'=>0);
+        if($existe){
+            $existe->codigo = $_POST['data']['hash'];
+            $existe->save();
+        }
+
+    }
+
+
+    public function clientSetup()
+    {
+        $grupo = new \App\Group;
+        $grupo->desc = "administra o sistema";
+        $grupo->name = "admin";
+        $grupo->save();
+
+        $grupo_corretores = new \App\Group;
+        $grupo_corretores->desc = "corretores";
+        $grupo_corretores->name = "corretores";
+        $grupo_corretores->save();
+
+        $admin = new \App\Classes\User;
+        $admin->email = "admin@test.com";
+        $admin->password = "test123pass";
+        $admin->name = "admin";
+        $admin->logado = 0;
+        $admin->login = new \DateTime('2018-01-01 00:00:09');
+        $admin->rank = 0;
+        $admin->disponivel = 0;
+        $admin->pipedrive_id = 0;
+        $admin->group_id = $grupo->id;
+        print_r($admin->save());
+    }
+
+    public function roleta()
+    {
+
+    /*	$usuario = new \App\Classes\User;
+        $usuario->email = "test@test.com";
+        $usuario->password = "test123pass";
+        $usuario->name = "Usuario";
+        $usuario->logado = 0;
+        $usuario->pipedrive_id = 0;
+        $usuario->group_id = 1;
+        $usuario->save();*/
+
+    	$user = new \App\Classes\User;
+    	$user->email = "admin@test.com";
+        $user->password = "test123pass";
+    	print_r($user->login());
+      //  return "roleta";
+    }
+
+     public function usuarios()
+    {
+        $usuarios = \App\Classes\User::all();
+        /*try {
+        } catch (Exception $e) {
+            
+        }*/
+        return response()->json($usuarios);
+    } 
+
+    public function carregar_usuario($id)
+    {
+       
+       $usuario = \App\Classes\User::find($id);
+        if(is_null($usuario)){
+            //return $this->respond(Response::HTTP_NOT_FOUND);
+        }
+
+        $usuario_retorno  = array();
+        $usuario_retorno['profile'] = $usuario;
+
+        $apontamentos = \App\Appointment::where('user_id', $usuario->id)->get();
+
+        $usuario_retorno['apontamentos'] = $apontamentos;
+
+        $pipeDrive = new \App\Classes\PipeDrive;
+
+        $usuario_retorno['profile_pipedrive'] = json_decode($pipeDrive->carrega_usuario($usuario->pipedrive_id), true);
+
+        return response()->json($usuario_retorno);
+
+    }
+
+    public function usuarios_chaves()
+    {
+        $usuarios = \App\Classes\User::all();
+        $chaveados = array();
+        foreach ($usuarios as $usuario) {
+            $chaveados[$usuario->id]['name'] = $usuario->name;
+            $chaveados[$usuario->id]['imagem'] = $usuario->imagem;
+            $chaveados[$usuario->id]['rank'] = $usuario->rank;
+        }
+        return response()->json($chaveados);
+    }
+
+    public function disponivel()
+    {
+    	$admin = new \App\Classes\User;
+        $admin->email = "admin@test.com";
+        $admin->password = "test123pass";
+        $admin->name = "admin";
+        $admin->logado = 0;
+        $admin->login = new \DateTime('2018-01-01 00:00:09');
+        $admin->rank = 0;
+        $admin->disponivel = 0;
+        $admin->pipedrive_id = 0;
+        $admin->group_id = 1;
+        $admin->save();
+
+    	$usuario = new \App\Classes\User;
+        $usuario->email = "test@test.com";
+        $usuario->password = "test123pass";
+        $usuario->name = "Usuario";
+        $usuario->logado = 0;
+        $usuario->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario->rank = 0;
+        $usuario->disponivel = 1;
+        $usuario->pipedrive_id = 0;
+        $usuario->group_id = 2;
+        $usuario->save();
+
+        $usuario1 = new \App\Classes\User;
+        $usuario1->email = "test1@test.com";
+        $usuario1->password = "test123pass";
+        $usuario1->name = "Usuario1";
+        $usuario1->logado = 0;
+        $usuario1->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario1->rank = 0;
+        $usuario1->disponivel = 1;
+        $usuario1->pipedrive_id = 0;
+        $usuario1->group_id = 2;
+        $usuario1->save();
+
+        $usuario2 = new \App\Classes\User;
+        $usuario2->email = "test2@test.com";
+        $usuario2->password = "test123pass";
+        $usuario2->name = "Usuario2";
+        $usuario2->logado = 0;
+        $usuario2->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario2->rank = 0;
+        $usuario2->disponivel = 1;
+        $usuario2->pipedrive_id = 0;
+        $usuario2->group_id = 2;
+        $usuario2->save();
+
+        $usuario3 = new \App\Classes\User;
+        $usuario3->email = "test3@test.com";
+        $usuario3->password = "test123pass";
+        $usuario3->name = "Usuario3";
+        $usuario3->logado = 0;
+        $usuario3->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario3->rank = 0;
+        $usuario3->disponivel = 0;
+        $usuario3->pipedrive_id = 0;
+        $usuario3->group_id = 2;
+        $usuario3->save();
+
+    	$user = new \App\Classes\User;
+    	$user->email = "admin@test.com";
+        $user->password = "test123pass";
+    	print_r($user->login());
+    	print_r($user->logados());
+        return "roleta";
+    }
+
+    public function cenario()
+    {
+        $admin = new \App\Classes\User;
+        $admin->email = "admin@test.com";
+        $admin->password = "test123pass";
+        $admin->name = "Admin";
+        $admin->logado = 0;
+        $admin->login = new \DateTime('2018-01-01 00:00:09');
+        $admin->rank = 0;
+        $admin->disponivel = 0;
+        $admin->pipedrive_id = 0;
+        $admin->group_id = 1;
+        $admin->save();
+
+        $usuario = new \App\Classes\User;
+        $usuario->email = "test@test.com";
+        $usuario->password = "test123pass";
+        $usuario->name = "Bedas";
+        $usuario->logado = 0;
+        $usuario->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario->rank = 1;
+        $usuario->disponivel = 1;
+        $usuario->pipedrive_id = 0;
+        $usuario->group_id = 2;
+        $usuario->save();
+
+        $usuario1 = new \App\Classes\User;
+        $usuario1->email = "test1@test.com";
+        $usuario1->password = "test123pass";
+        $usuario1->name = "Manuel";
+        $usuario1->logado = 0;
+        $usuario1->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario1->rank = 2;
+        $usuario1->disponivel = 1;
+        $usuario1->pipedrive_id = 0;
+        $usuario1->group_id = 2;
+        $usuario1->save();
+
+        $usuario2 = new \App\Classes\User;
+        $usuario2->email = "test2@test.com";
+        $usuario2->password = "test123pass";
+        $usuario2->name = "Aprigiu";
+        $usuario2->logado = 0;
+        $usuario2->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario2->rank = 0;
+        $usuario2->disponivel = 1;
+        $usuario2->pipedrive_id = 0;
+        $usuario2->group_id = 2;
+        $usuario2->save();
+
+      /*  $usuario3 = new \App\Classes\User;
+        $usuario3->email = "test3@test.com";
+        $usuario3->password = "test123pass";
+        $usuario3->name = "Usuario3";
+        $usuario3->logado = 0;
+        $usuario3->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario3->rank = 0;
+        $usuario3->disponivel = 0;
+        $usuario3->pipedrive_id = 0;
+        $usuario3->group_id = 2;
+        $usuario3->save();*/
+
+        $user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        print_r($user->login());
+        print_r($user->logados());
+        return "roleta";
+    }
+
+    public function cenario1()
+    {
+        $admin = new \App\Classes\User;
+        $admin->email = "admin@test.com";
+        $admin->password = "test123pass";
+        $admin->name = "Admin";
+        $admin->logado = 0;
+        $admin->login = new \DateTime('2018-01-01 00:00:09');
+        $admin->rank = 0;
+        $admin->disponivel = 0;
+        $admin->pipedrive_id = 0;
+        $admin->group_id = 1;
+        $admin->save();
+
+        $usuario = new \App\Classes\User;
+        $usuario->email = "test@test.com";
+        $usuario->password = "test123pass";
+        $usuario->name = "Bedas";
+        $usuario->logado = 0;
+        $usuario->login = new \DateTime('2018-01-01 00:00:02');
+        $usuario->rank = 0;
+        $usuario->disponivel = 1;
+        $usuario->pipedrive_id = 0;
+        $usuario->group_id = 2;
+        $usuario->save();
+
+        $usuario1 = new \App\Classes\User;
+        $usuario1->email = "test1@test.com";
+        $usuario1->password = "test123pass";
+        $usuario1->name = "Manuel";
+        $usuario1->logado = 0;
+        $usuario1->login = new \DateTime('2018-01-01 00:00:03');
+        $usuario1->rank = 0;
+        $usuario1->disponivel = 1;
+        $usuario1->pipedrive_id = 0;
+        $usuario1->group_id = 2;
+        $usuario1->save();
+
+        $usuario2 = new \App\Classes\User;
+        $usuario2->email = "test2@test.com";
+        $usuario2->password = "test123pass";
+        $usuario2->name = "Aprigiu";
+        $usuario2->logado = 0;
+        $usuario2->login = new \DateTime('2018-01-01 00:00:01');
+        $usuario2->rank = 0;
+        $usuario2->disponivel = 1;
+        $usuario2->pipedrive_id = 0;
+        $usuario2->group_id = 2;
+        $usuario2->save();
+
+      /*  $usuario3 = new \App\Classes\User;
+        $usuario3->email = "test3@test.com";
+        $usuario3->password = "test123pass";
+        $usuario3->name = "Usuario3";
+        $usuario3->logado = 0;
+        $usuario3->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario3->rank = 0;
+        $usuario3->disponivel = 0;
+        $usuario3->pipedrive_id = 0;
+        $usuario3->group_id = 2;
+        $usuario3->save();*/
+
+        $user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        print_r($user->login());
+        print_r($user->logados());
+        return "roleta";
+    }
+
+    public function cenario2()
+    {
+        $admin = new \App\Classes\User;
+        $admin->email = "admin@test.com";
+        $admin->password = "test123pass";
+        $admin->name = "Admin";
+        $admin->logado = 1;
+        $admin->login = new \DateTime('2018-01-01 00:00:09');
+        $admin->rank = 0;
+        $admin->disponivel = 0;
+        $admin->pipedrive_id = 0;
+        $admin->group_id = 1;
+        $admin->save();
+
+
+        $usuario = new \App\Classes\User;
+        $usuario->email = "test@test.com";
+        $usuario->password = "test123pass";
+        $usuario->name = "Bedas";
+        $usuario->logado = 1;
+        $usuario->login = new \DateTime('2018-01-01 00:00:03');
+        $usuario->rank = 2;
+        $usuario->disponivel = 1;
+        $usuario->pipedrive_id = 0;
+        $usuario->group_id = 2;
+        $usuario->save();
+
+        $usuario1 = new \App\Classes\User;
+        $usuario1->email = "test1@test.com";
+        $usuario1->password = "test123pass";
+        $usuario1->name = "Manuel";
+        $usuario1->logado = 1;
+        $usuario1->login = new \DateTime('2018-01-01 00:00:03');
+        $usuario1->rank = 3;
+        $usuario1->disponivel = 1;
+        $usuario1->pipedrive_id = 0;
+        $usuario1->group_id = 2;
+        $usuario1->save();
+
+        $usuario2 = new \App\Classes\User;
+        $usuario2->email = "test2@test.com";
+        $usuario2->password = "test123pass";
+        $usuario2->name = "Aprigiu";
+        $usuario2->logado = 1;
+        $usuario2->login = new \DateTime('2018-01-01 00:00:02');
+        $usuario2->rank = 1;
+        $usuario2->disponivel = 1;
+        $usuario2->pipedrive_id = 0;
+        $usuario2->group_id = 2;
+        $usuario2->save();
+
+      /*  $usuario3 = new \App\Classes\User;
+        $usuario3->email = "test3@test.com";
+        $usuario3->password = "test123pass";
+        $usuario3->name = "Usuario3";
+        $usuario3->logado = 0;
+        $usuario3->login = new \DateTime('2018-01-01 00:00:09');
+        $usuario3->rank = 0;
+        $usuario3->disponivel = 0;
+        $usuario3->pipedrive_id = 0;
+        $usuario3->group_id = 2;
+        $usuario3->save();*/
+
+        $user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        print_r($user->login());
+        print_r($user->logados());
+        return "roleta";
+    }
+
+
+    public function sorteio(){
+        $user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        $user->login();
+        //print_r($user->logados()->toJson());
+        $brokers = $user->disponiveis()->toArray();
+
+        $roleta = new \App\Classes\Roleta;
+        $roleta->inserir_corretores($brokers);
+        //print_r($roleta->listar_corretores());
+        echo "<pre>";
+        //print_r($roleta->sortear_corretores());
+        $sorteados = $roleta->sortear_corretores();
+        foreach ($sorteados as $sorteado){
+            print_r($sorteado['name']);
+        }
+    }
+
+    public function sortear($roleta_id){
+        $user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        $user->login();
+        //print_r($user->logados()->toJson());
+        $brokers = $user->participantes_roleta($roleta_id);
+        //$ids = 0;
+        //essa action só precisa pra testes
+        foreach ($brokers as $corretor) {
+            if($corretor->login == 0){
+               $corretor->login = new \DateTime();
+               $corretor->save();
+            }
+        }
+
+        $brokers = $user->participantes_roleta($roleta_id);
+        $brokers = $brokers->toArray();
+
+        $roleta = new \App\Classes\Roleta;
+        $roleta->inserir_corretores($brokers);
+        //print_r($roleta->listar_corretores());
+       // echo "<pre>";
+        $retorno = new \App\Classes\PipeDrive;
+        $leadings = json_decode($retorno->deals(), true);
+        //$leadings = $retorno->deals();
+       // print_r($leadings);
+        $ofertas = array();
+        $index_oferta = 0;
+        if(is_array($leadings)){
+            foreach ($leadings as $leading) {
+                $ofertas[$index_oferta] = $leading;
+                $index_oferta++;
+            }
+        }
+        
+        $listagem_sorteados = array();
+        //print_r($roleta->sortear_corretores());
+        $sorteados = $roleta->sortear_corretores();
+        $x = 0;
+        foreach ($sorteados as $sorteado){
+            if(isset($ofertas[$x])){
+                $apontamento = new \App\Appointment;
+                $apontamento->deal_id = $ofertas[$x]['id'];
+                $apontamento->name = $ofertas[$x]['title'];
+                $apontamento->roleta_id = $roleta_id;
+                $apontamento->user_id = $sorteado['id'];
+                $apontamento->status = 0;
+                $apontamento->save();
+                $this->altera_status($id_corretor);
+                $listagem_sorteados[]=array('nome' => $sorteado['name'],'oferta' => $ofertas[$x]['title'] );
+            }else{
+                $sobrando =  \App\Classes\User::find($sorteado['id']);
+                $sobrando->roleta_id = 0;
+                $sobrando->save();
+            }
+            //echo $ofertas[$x]['title']."-";
+            //print_r($sorteado['id']." - ".$sorteado['name']." - ".$sorteado['pipedrive_id']);
+            $x++;
+        }
+        $roletinha =  \App\Roulette::find($roleta_id);
+        $roletinha->status = 1;
+        $roletinha->save();
+        return response()->json($listagem_sorteados);
+    }
+
+    public function altera_status($id_corretor){
+        $data = '{"date":'.(new \DateTime())->getTimestamp().',"status": "2"}';
+
+        $url = "https://chatsocket-2626b.firebaseio.com/messageria/".$id_corretor.".json";
+        $ch = curl_init();
+        $headers = array('X-HTTP-Method-Override: PATCH');
+        curl_setopt($ch, CURLOPT_URL, $url);                               
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+       // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/plain'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $jsonResponse = curl_exec($ch);
+        if(curl_errno($ch))
+        {
+            echo 'Curl error: ' . curl_error($ch);
+        }
+        curl_close($ch);
+    }
+
+    public function altera_status_valor($id_corretor, $valor){
+        $data = '{"date":'.(new \DateTime())->getTimestamp().',"status": "'.$valor.'"}';
+
+        $url = "https://chatsocket-2626b.firebaseio.com/messageria/".$id_corretor.".json";
+        $ch = curl_init();
+        $headers = array('X-HTTP-Method-Override: PATCH');
+        curl_setopt($ch, CURLOPT_URL, $url);                               
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+       // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/plain'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $jsonResponse = curl_exec($ch);
+        if(curl_errno($ch))
+        {
+            echo 'Curl error: ' . curl_error($ch);
+        }
+        curl_close($ch);
+    }
+
+
+    public function sortear_entrega($roleta_id){
+        $user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        $user->login();
+        //print_r($user->logados()->toJson());
+        $brokers = $user->participantes_roleta($roleta_id);
+
+        //$ids = 0;
+        //essa action só precisa pra testes
+        foreach ($brokers as $corretor) {
+            if($corretor->login == 0){
+               $corretor->login = new \DateTime();
+               $corretor->save();
+            }
+        }
+
+        $brokers = $user->participantes_roleta($roleta_id);
+       
+        $roleta = new \App\Classes\Roleta;
+        $roleta->inserir_corretores($brokers);
+        //print_r($roleta->listar_corretores());
+       // echo "<pre>";
+        $retorno = new \App\Classes\PipeDrive;
+        $leadings = json_decode($retorno->deals_sistema(), true);
+        //$leadings = $retorno->deals();
+
+        $ofertas = array();
+        $index_oferta = 0;
+        if(is_array($leadings)){
+            foreach ($leadings as $leading) {
+                $ofertas[$index_oferta] = $leading;
+                $index_oferta++;
+            }
+        }
+        
+        $listagem_sorteados = array();
+        //print_r($roleta->sortear_corretores());
+        $sorteados = $roleta->sortear_corretores();
+        $x = 0;
+        foreach ($sorteados as $sorteado){
+            if(isset($ofertas[$x])){
+                $apontamento = new \App\Appointment;
+                $apontamento->deal_id = $ofertas[$x]['id'];
+                $apontamento->name = $ofertas[$x]['name'];
+                $apontamento->roleta_id = $roleta_id;
+                $apontamento->user_id = $sorteado['id'];
+                $apontamento->status = 0;
+                $apontamento->save();
+                $oferta = \App\Offer::find($ofertas[$x]['id']);
+                $this->notificar($sorteado['id']);
+                $oferta->status = 2;
+                $oferta->save();
+                $this->altera_status($sorteado['id']);
+                $listagem_sorteados[]=array('nome' => $sorteado['name'],'id_oferta' => $ofertas[$x]['id'],'oferta' => $ofertas[$x]['name'] );
+            }
+            /*else{
+                $sobrando =  \App\Classes\User::find($sorteado['id']);
+                $sobrando->roleta_id = 0;
+                $sobrando->save();
+            }*/
+            //echo $ofertas[$x]['title']."-";
+            //print_r($sorteado['id']." - ".$sorteado['name']." - ".$sorteado['pipedrive_id']);
+            $x++;
+        }
+        //$roletinha =  \App\Roulette::find($roleta_id);
+        //$roletinha->status = 1;
+        //$roletinha->save();
+        return response()->json($listagem_sorteados);
+    }
+
+    public function logados(){
+    	$user = new \App\Classes\User;
+    	//$user->email = "admin@test.com";
+        //$user->password = "test123pass";
+    	//$user->login();
+    	//print_r($user->logados()->toJson());
+    	return response()->json($user->logados());
+    }
+
+
+    public function dashboard(){
+        /*$user = new \App\Classes\User;
+        $user->email = "admin@test.com";
+        $user->password = "test123pass";
+        $user->login();
+        $logados = $user->logados();
+        */
+
+        $ofertas = \App\Offer::all();
+        $retorno_ofertas = array();
+        foreach ($ofertas as $oferta) {
+            $retorno_ofertas[$oferta->status][]=$oferta;
+        }
+
+        $retorno_appointments = array();
+        $appointments = \App\Appointment::where('status','<', 8)->get();
+        foreach ($appointments as $appointment) {
+            $retorno_appointments[$appointment->status][]=$appointment;
+        }
+        $resposta = array();
+        $logados =  \App\Classes\User::where('logado', 1)->get();
+        $resposta['logados'] = $logados;
+        $resposta['ofertas'] = $ofertas;
+        $resposta['ofertas_status'] = $retorno_ofertas;
+        $resposta['apontamentos'] = $appointments;
+        $resposta['apontamentos_status'] = $retorno_appointments;
+        print_r(json_encode($resposta));
+    }
+
+    public function primeiro_acesso($codigo){
+        $existe =  \App\Classes\User::where('codigo', $codigo)->first();
+
+        $usuario = array('nome'=>$existe->name, 'imagem' => $existe->imagem, 'codigo' => $codigo);
+        return view('capriatti/confirmacao' , ['usuario' => $usuario]);
+       // return response()->json($existe);
+    }
+
+
+    public function confirmar_email(){
+        
+        return view('capriatti/confirmacao');
+       // return response()->json($existe);
+    }
+
+    public function notificar($receiver_id){
+        $existe = \App\Classes\User::find($receiver_id);
+        $url = 'https://android.googleapis.com/gcm/send';
+        $fields = array(
+            'to' => $existe->codigo,
+            'data' => array('data'=>array('data'=>'dados')),
+            'payload' => array('data'=>array('data'=>'dados')),
+            'content_available' => true,
+            'priority' => 'high'
+        );
+ 
+        $headers = array(
+            'Authorization: key=AAAA-lI1rew:APA91bG5bfkTxVA7UdqrKbsmPC-XSHwBU7q0h6Y6lOqFpJ5Wb_RVuajtxzYhtiHA_PycN8p_4opG9Vezk07NHXliCp42MHY1W7-MH0D7m0Pf6Jwd7NbOkbgto89oEBbwYz-TImrsE1le' ,
+            'Content-Type: application/json'
+        );
+        // Open connection
+        $ch = curl_init();
+ 
+        // Set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, $url);
+ 
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+ 
+        // disable SSL certificate support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+ 
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+ 
+        // execute post
+         try {
+             $result = curl_exec($ch);
+         } catch (Exception $e) {
+             echo $e->getMessage();
+             if ($result === FALSE) {
+                   die ('failed: ' . curl_error($ch));
+                }
+         }
+     
+        // Close connection
+        curl_close($ch);
+
+    }
+
+    public function confirmar(){
+        $existe = \App\Classes\User::where('codigo',$_POST['codigo'])->where('email',$_POST['email'])->first();
+        $resposta = array('status'=>0);
+        if($existe){
+            //$existe->confirmado = 1;
+            $resposta['response'] = $existe->name;
+            $resposta['hash'] = $existe->codigo;
+            $resposta['status'] = 1;
+            $existe->save();
+            //return response()->json($existe->name);
+        }else{
+            $resposta['response'] = 'Email não confere';
+        }
+        //print_r($user->logados()->toJson());
+        return response()->json($resposta);
+    }
+
+
+    public function setar(){
+        $existe = \App\Classes\User::where('codigo',$_POST['codigo'])->first();
+        $resposta = array('status'=>0);
+        if($existe){
+            $existe->confirmado = 1;
+            $existe->password = $_POST['senha'];
+            //$resposta['response'] = $existe->name;
+           // $resposta['hash'] = $existe->codigo;
+            $resposta['status'] = 1;
+            $existe->save();
+            //return response()->json($existe->name);
+        }
+        //print_r($user->logados()->toJson());
+        return response()->json($resposta);
+    }
+
+   public function check_leads(){
+        $retorno = new \App\Classes\PipeDrive;
+        $leadings = $retorno->deals();
+        return response()->json($leadings);
+    }
+
+
+    public function limpar_ofertas(){
+        $existe =  \App\Appointment::where('status', 0)->get();
+
+        foreach ($existe as $apontamento) {
+            # code...
+           // $data1 = strtotime(\date("d/m/Y"));
+            $data1 = new \DateTime();
+           
+          //  print_r($apontamento->created_at->getTimestamp());
+
+            $interval = new \DateInterval('PT2M');
+            $data1->sub($interval); 
+
+            //var_dump($data1);
+           // var_dump($apontamento->created_at);
+        
+            $data_atual =  (int)$data1->getTimestamp(); 
+            $data_apontamento = (int)$apontamento->created_at->getTimestamp();  
+         
+            if($data_atual > $data_apontamento){
+                $atual = \App\Appointment::find($apontamento->id);
+                $atual->status = 9;
+                $atual->save();
+                $oferta = \App\Offer::find($apontamento->deal_id);
+                $oferta->status = 1;
+                $oferta->save();
+                $corretor = \App\Classes\User::find($apontamento->user_id);
+                //$corretor->roleta_id = 0;
+                $corretor->save();
+                //$corretor->upda = ;
+<<<<<<< HEAD
+               // $this->altera_status_valor($apontamento->user_id, 0);
+=======
+                //$this->altera_status_valor($apontamento->user_id, 0);
+>>>>>>> 1f67a493e49aeb8d3a8038c8acee81b5563026a4
+                echo 'Limpando Oferta : '.$apontamento->deal_id;
+            }
+
+        }
+    }                                                                                                                                                                                                         
+    public function appointments(){
+        $appointments = \App\Appointment::where('status','<', 8)->get();
+        return response()->json($appointments);
+    }                                                                                       
+    public function logar(){
+        $user = new \App\Classes\User;
+        $user->email = $_POST['email'];
+        $user->password = $_POST['senha'];
+
+        $response = $user->login();
+        
+
+        return response()->json($response);
+    }
+
+}

@@ -1,0 +1,240 @@
+<?php
+namespace App\Http\Controllers;
+
+class PipedriveController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        
+    }
+
+    public function home()
+    {
+        return view('capriatti/login');
+    }
+
+    public function logoff()
+    {
+        try {
+            unset($_SESSION);
+            session_destroy();
+        } catch (Exception $e) {
+            
+        }
+        
+        return redirect('/');
+        
+    }
+
+    public function admin()
+    {
+        $logado = $_SESSION['usuario_logado'];
+
+        if(isset($_SESSION['logado'])){
+            return view('capriatti/index', ['usuario' => $logado]);
+        }else{
+            return redirect('/');
+        }
+    }
+
+     public function getOrganizations()
+    {
+        echo '<pre>';
+        $retorno = new \App\Classes\PipeDrive;
+        echo $retorno->persons();
+    }
+
+    public function carrega_usuarios()
+    {
+        $retorno = new \App\Classes\PipeDrive;
+        echo $retorno->users();
+    }
+
+    public function loader_usuarios()
+    {
+        $retorno = new \App\Classes\PipeDrive;
+        echo $retorno->carregar_usuarios();
+    }
+
+    public function fake_leads()
+    {
+        header('Content-Type: application/json');
+        $response = file_get_contents('deals.json');
+        echo $response;
+    }
+
+    public function loader_leads()
+    {
+        $retorno = new \App\Classes\PipeDrive;
+        echo $retorno->carregar_leads();
+    }
+
+    public function carrega_deals()
+    {
+        $retorno = new \App\Classes\PipeDrive;
+        echo $retorno->filtro();
+    }
+
+    public function criar_roleta()
+    {
+        $total_roletas =  \App\Roulette::where('status', 0)->get();
+        try {
+             if(count($total_roletas)<1){
+                $roleta = new \App\Roulette;
+                $roleta->name = "Roleta1";
+                $roleta->status = 0;
+                $roleta->save();
+                echo $roleta->id;
+            }else{
+                echo 0;
+            }
+        } catch (Exception $e) {
+            echo 0;
+        }
+          
+    }
+
+    public function inscrever()
+    {
+        $postdata = file_get_contents("php://input");
+        $request = json_decode($postdata);
+        $roleta = $request->roleta_id;
+        $usuario_id = $request->user_id;
+        $usuario =  \App\User::find($usuario_id);
+        if(!isset($usuario->roleta_id)){
+            $usuario->roleta_id = $roleta ;
+            $usuario->save();
+            echo 1;
+            return;
+        }
+        echo 0;  
+        return;
+    }
+
+    public function sair()
+    {
+        $postdata = file_get_contents("php://input");
+        $request = json_decode($postdata);
+        $roleta = $request->roleta_id;
+        $usuario_id = $request->user_id;
+        $usuario =  \App\User::find($usuario_id);
+   
+<<<<<<< HEAD
+        $usuario->roleta_id = '' ;
+=======
+        $usuario->roleta_id = NULL ;
+>>>>>>> 1f67a493e49aeb8d3a8038c8acee81b5563026a4
+        $usuario->save();
+        echo 1;
+        return;
+        
+    }
+
+    public function carrega_deal($id)
+    {
+        $retorno = new \App\Classes\PipeDrive;
+        echo $retorno->deal($id);
+        die();
+    }
+
+    public function carrega_apontamento($id)
+    {
+        $retorno = \App\Appointment::find($id);
+        $oferta = \App\Offer::find($id);
+        //$pipedrive_deal = $oferta->deal_id;
+        $retorno->pipedrive_deal = $oferta->deal_id;
+        return response()->json($retorno);
+    }
+
+    public function apontado($id)
+    {
+        $retorno = \App\Appointment::where('user_id',$id)->first();
+        return response()->json($retorno);
+    }
+
+    public function aceitar($id)
+    {
+        $retorno = \App\Appointment::where('user_id',$id)->where('fechado','!=', 1)->first();
+        $retorno->status = 1;
+        $retorno->fechado = 1;
+
+        $retorno->save();
+        $usuario = \App\User::find($id);
+        $pipe = new \App\Classes\PipeDrive;
+        $params = array('user_id',$usuario->pipedrive_id);
+        $pipe->change_deal($retorno->deal_id , $params);
+
+   //     $usuario->roleta_id = 0;
+        $usuario->rank = $usuario->rank + 5;
+        $usuario->save();
+        return response()->json($retorno);
+    }
+
+    public function recusar($id)
+    {
+        $retorno = \App\Appointment::where('user_id',$id)->first();
+        $retorno->status = 3;
+        $retorno->fechado = 1;
+        $retorno->save();
+        $usuario = \App\User::find($id);
+    //    $usuario->roleta_id = 0;
+        $usuario->rank = $usuario->rank - 5;
+        $usuario->save();
+        return response()->json($retorno);
+    }
+
+    public function contato($id)
+    {
+        $retorno = \App\Appointment::find($id);
+        $retorno->status = 4;
+        $retorno->save();
+        $usuario = \App\User::find($retorno->user_id);
+        $usuario->rank = $usuario->rank + 5;
+      //  $usuario->roleta_id = 0;
+        $usuario->save();
+        return response()->json($retorno);
+    }
+
+    public function dados($id)
+    {
+        $retorno = \App\Appointment::where('user_id',$id)->first();
+        $retorno->status = 6;
+        $retorno->save();
+        $usuario = \App\User::find($id);
+      //  $usuario->roleta_id = 0;
+        $usuario->rank = $usuario->rank + 5;
+        $usuario->save();
+        return response()->json($retorno);
+    }
+
+    public function agendar($id)
+    {
+        $retorno = \App\Appointment::where('user_id',$id)->first();
+        $retorno->status = 8;
+        $retorno->save();
+        $usuario = \App\User::find($id);
+        $usuario->rank = $usuario->rank + 5;
+      //  $usuario->roleta_id = 0;
+        $usuario->save();
+        return response()->json($retorno);
+    }
+
+    public function encerrar($id)
+    {
+        $retorno = \App\Appointment::where('user_id',$id)->first();
+        $retorno->status = 5;
+        $retorno->save();
+        $usuario = \App\User::find($id);
+       // $usuario->roleta_id = 0;
+        $usuario->rank = $usuario->rank - 5;
+        $usuario->save();
+        return response()->json($retorno);
+    }
+
+    
+}

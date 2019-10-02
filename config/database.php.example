@@ -1,0 +1,24 @@
+<?php
+return [
+    'default'     => env('APP_ENV', 'local'),
+    'migrations' => 'migrations',
+    'connections' => [
+        'local' => [
+            'driver'    => 'mysql',
+            'host' => env('DB_HOST', 'localhost'),
+            'database'   => env('DB_DATABASE', 'core'),
+            'username' => env('DB_USER', 'capriatti'),
+            'password' => env('DB_PASSWORD', 'entrar'),
+        ],
+        'testing' => [
+            'driver'    => 'sqlite',
+            'database' => env('DB_DATABASE', storage_path('dev.sqlite')),
+            'prefix'   => env('DB_PREFIX', ''),
+        ],
+        'sqlite' => [
+            'driver'   => 'sqlite',
+            'database' => env('DB_DATABASE', storage_path('dev.sqlite')),
+            'prefix'   => env('DB_PREFIX', ''),
+        ],
+    ],
+];

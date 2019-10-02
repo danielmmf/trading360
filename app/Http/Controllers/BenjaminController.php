@@ -1,0 +1,68 @@
+<?php namespace App\Http\Controllers;
+
+class BenjaminController extends Controller {
+
+	private $actions;
+
+	public function __construct()
+	{
+		$this->actions = array(
+		'pwa'=>array('view'=>'client/index','js'=>'client/login','navbar'=>'navbar'),
+		'qrunidade'=>array('view'=>'client/qrunidade','js' => 'client/logado' , 'navbar'=>'client/navbar'),
+		'select'=>array('view'=>'client/select','js' => 'client/logado' , 'navbar'=>'client/navbar'),
+		'cardapio'=>array('view'=>'client/cardapio','js' => 'client/add_cart' , 'navbar'=>'client/navbar_cart'),
+		'carrinho'=>array('view'=>'client/carrinho','js' => 'client/cart' , 'navbar'=>'client/navbar_hist'),
+		'historico'=>array('view'=>'client/historico','js' => 'client/history' , 'navbar'=>'client/navbar_cart')
+		);
+	}
+
+    public function pwa(){  	
+    	return $this->chamar_get('pwa');
+    }
+
+    public function qrunidade(){  	
+    	return $this->chamar_get('qrunidade');
+    }
+
+    public function select(){  	
+    	return $this->chamar_get('select');
+    }
+
+    public function cardapio($loja, $cliente){  	
+    	return $this->chamar_get_loja_cliente('cardapio', $loja, $cliente);
+    }
+
+    public function carrinho($loja, $cliente){  	
+    	return $this->chamar_get_loja_cliente('carrinho', $loja, $cliente);
+    }
+
+     public function historico($loja, $cliente){  	
+    	return $this->chamar_get_loja_cliente('historico', $loja, $cliente);
+    }
+
+    public function produtos()
+    { 
+
+    	$produtos = json_decode(file_get_contents('prods.json') , true);
+
+	    $listados = array();
+	    foreach ($produtos as $produto) {
+	        $item = array('id' => 'nome', 'nome'=>'nome' );
+	        //print_r($item);
+	        $listados[$produto['Categoria']][$produto['Sub-Categoria']][$produto['PRO_CODIGO']] = $produto;
+
+	    }
+	    echo json_encode($listados);# code...
+    }
+
+    public function chamar_get_loja_cliente($action, $loja, $cliente){
+    	$selected_action = $this->actions[$action];
+    	return view('benjamin/index', ['partial'=>$selected_action['view'],'navbar'=>$selected_action['navbar'] , 'js_view'=> $selected_action['js'],'loja'=>$loja , 'cliente'=> $cliente]);
+    }
+
+    public function chamar_get($action){
+    	$selected_action = $this->actions[$action];
+    	return view('benjamin/index', ['partial'=>$selected_action['view'],'navbar'=>$selected_action['navbar'] , 'js_view'=> $selected_action['js']]);
+    }
+
+}

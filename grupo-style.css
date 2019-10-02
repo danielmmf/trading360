@@ -1,0 +1,5 @@
+.testimonial-full .testi-image, .testimonial-full .testi-image a, .testimonial-full .testi-image i, .testimonial-full .testi-image img {
+	width: 80px;
+	height: 80px;
+	display: block;
+}
